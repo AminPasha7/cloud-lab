@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: caller-azure, namespace: azure, labels: { app: caller-azure, cloud: azure } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: caller-azure } }
+  template:
+    metadata: { labels: { app: caller-azure, cloud: azure } }
+    spec:
+      containers:
+      - name: curl
+        image: curlimages/curl:8.10.1
+        args: ["/bin/sh","-c","while true; do curl -s -m 2 http://api-azure.azure.svc.cluster.local:8080 > /dev/null; sleep 1; done"]

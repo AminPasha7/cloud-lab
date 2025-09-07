@@ -1,0 +1,30 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  profile: default
+  meshConfig:
+    accessLogFile: /dev/stdout
+    trustDomain: multicloud.local
+  values:
+    global:
+      meshID: multicloud-mesh
+      multiCluster:
+        clusterName: gcp
+      network: gcp-net
+  components:
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: true
+    - name: istio-eastwestgateway
+      namespace: istio-system
+      enabled: true
+      label:
+        istio: eastwestgateway
+        topology.istio.io/network: gcp-net
+      k8s:
+        service:
+          type: NodePort
+          ports:
+          - { name: tls,         port: 15443, targetPort: 15443, nodePort: 32001 }
+          - { name: tls-istiod,  port: 15012, targetPort: 15012, nodePort: 32002 }
+          - { name: tls-webhook, port: 15017, targetPort: 15017, nodePort: 32003 }

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata: { name: aws,   labels: { istio-injection: enabled, topology.kubernetes.io/region: aws } }
+---
+apiVersion: v1
+kind: Namespace
+metadata: { name: azure, labels: { istio-injection: enabled, topology.kubernetes.io/region: azure } }
+---
+apiVersion: v1
+kind: Namespace
+metadata: { name: gcp,   labels: { istio-injection: enabled, topology.kubernetes.io/region: gcp } }

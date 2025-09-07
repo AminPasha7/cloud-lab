@@ -1,0 +1,13 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  profile: default
+  meshConfig:
+    accessLogFile: /dev/stdout
+    trustDomain: multicloud.local
+  values:
+    global:
+      meshID: multicloud-mesh
+      multiCluster:
+        clusterName: aws
+      network: aws-net

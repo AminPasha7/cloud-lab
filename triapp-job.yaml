@@ -1,0 +1,28 @@
+﻿apiVersion: batch/v1
+kind: Job
+metadata:
+  name: triapp-check
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: triapp
+          image: cloud-lab-triapp:v1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              value: test
+            - name: AWS_SECRET_ACCESS_KEY
+              value: test
+            - name: AWS_REGION
+              value: us-east-1
+            - name: AWS_ENDPOINT
+              value: http://host.docker.internal:4566
+            - name: AZURE_STORAGE_CONNECTION_STRING
+              value: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://host.docker.internal:10000/devstoreaccount1;QueueEndpoint=http://host.docker.internal:10001/devstoreaccount1;TableEndpoint=http://host.docker.internal:10002/devstoreaccount1
+            - name: PUBSUB_EMULATOR_HOST
+              value: host.docker.internal:8085
+            - name: GOOGLE_CLOUD_PROJECT
+              value: demo

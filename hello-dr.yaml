@@ -1,0 +1,49 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata: { name: hello-zonal }
+spec:
+  replicas: 6
+  selector: { matchLabels: { app: hello } }
+  template:
+    metadata: { labels: { app: hello } }
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector: { matchLabels: { app: hello } }
+      containers:
+        - name: web
+          image: nginxdemos/hello
+          ports: [{ containerPort: 80 }]
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: hello-pdb }
+spec:
+  minAvailable: 4
+  selector: { matchLabels: { app: hello } }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: hello-svc }
+spec:
+  selector: { app: hello }
+  ports: [{ port: 80, targetPort: 80 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: hello.localtest.me
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-svc
+                port: { number: 80 }

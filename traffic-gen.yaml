@@ -1,0 +1,16 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata: { name: traffic-gen }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: traffic-gen } }
+  template:
+    metadata:
+      labels: { app: traffic-gen }
+      annotations:
+        sidecar.istio.io/inject: "true"
+    spec:
+      containers:
+      - name: curl
+        image: curlimages/curl:8.10.1
+        args: ["sh","-c","while true; do curl -sS http://hello-svc.default.svc.cluster.local/ >/dev/null; sleep 1; done"]

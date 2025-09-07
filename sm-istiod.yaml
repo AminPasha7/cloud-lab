@@ -1,0 +1,16 @@
+﻿apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istiod
+  namespace: monitoring
+  labels:
+    release: monitoring                # <-- IMPORTANT
+spec:
+  namespaceSelector:
+    matchNames: ["istio-system"]
+  selector:
+    matchLabels:
+      app: istiod
+  endpoints:
+    - port: http-monitoring
+      interval: 15s

@@ -1,0 +1,15 @@
+﻿services:
+  triapp:
+    build: ./triapp
+    depends_on:
+      - localstack
+      - azurite
+      - gcp-pubsub
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_REGION: us-east-1
+      AWS_ENDPOINT: http://localstack:4566
+      AZURE_STORAGE_CONNECTION_STRING: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;QueueEndpoint=http://azurite:10001/devstoreaccount1;TableEndpoint=http://azurite:10002/devstoreaccount1"
+      PUBSUB_EMULATOR_HOST: gcp-pubsub:8085
+      GOOGLE_CLOUD_PROJECT: demo

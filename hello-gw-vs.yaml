@@ -1,0 +1,25 @@
+﻿apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: hello-gw
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port: { number: 80, name: http, protocol: HTTP }
+    hosts: [ "hello.mesh.localtest.me" ]
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: hello-vs
+  namespace: default
+spec:
+  hosts: [ "hello.mesh.localtest.me" ]
+  gateways: [ "hello-gw" ]
+  http:
+  - route:
+    - destination:
+        host: hello-svc.default.svc.cluster.local
+        port: { number: 80 }

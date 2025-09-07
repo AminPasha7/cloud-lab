@@ -1,0 +1,18 @@
+﻿apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-envoy
+  namespace: monitoring
+  labels:
+    release: monitoring                # <-- IMPORTANT
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    matchExpressions:
+      - key: istio-prometheus-ignore
+        operator: DoesNotExist
+  podMetricsEndpoints:
+    - port: http-envoy-prom
+      path: /stats/prometheus
+      interval: 15s

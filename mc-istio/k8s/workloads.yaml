@@ -1,76 +1,125 @@
+# AWS
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: api-aws, namespace: aws, labels: { app: api-aws, version: v1, cloud: aws } }
+metadata:
+  name: api-aws
+  namespace: aws
+  labels: { app: api-aws }
 spec:
   replicas: 1
   selector: { matchLabels: { app: api-aws } }
   template:
-    metadata: { labels: { app: api-aws, version: v1, cloud: aws } }
+    metadata:
+      labels: { app: api-aws }
+      annotations:
+        # keep your projected token mount for strict mode later
+        sidecar.istio.io/userVolume: |
+          [{"name":"istio-token","projected":{"sources":[{"serviceAccountToken":{"path":"istio-token","audience":"istio-ca","expirationSeconds":43200}}]}}]
+        sidecar.istio.io/userVolumeMount: |
+          [{"name":"istio-token","mountPath":"/var/run/secrets/tokens","readonly":true}]
     spec:
       containers:
       - name: app
         image: nicholasjackson/fake-service:v0.26.2
         env:
-        - { name: LISTEN_ADDR, value: "0.0.0.0:8080" }
-        - { name: NAME,        value: "api-aws" }
-        - { name: MESSAGE,     value: "hello from AWS" }
-        ports: [ { containerPort: 8080 } ]
+        - { name: NAME, value: "api-aws" }
+        - { name: MESSAGE, value: "hello from aws" }
+        ports:
+        - containerPort: 9090
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: api-aws, namespace: aws, labels: { app: api-aws, cloud: aws } }
+metadata:
+  name: api-aws
+  namespace: aws
+  labels: { app: api-aws }
 spec:
   selector: { app: api-aws }
-  ports: [ { port: 8080, targetPort: 8080 } ]
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 9090
+
+# AZURE
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: api-gcp, namespace: gcp, labels: { app: api-gcp, version: v1, cloud: gcp } }
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: api-gcp } }
-  template:
-    metadata: { labels: { app: api-gcp, version: v1, cloud: gcp } }
-    spec:
-      containers:
-      - name: app
-        image: nicholasjackson/fake-service:v0.26.2
-        env:
-        - { name: LISTEN_ADDR, value: "0.0.0.0:8080" }
-        - { name: NAME,        value: "api-gcp" }
-        - { name: MESSAGE,     value: "hello from GCP" }
-        - { name: UPSTREAM_URIS, value: "http://api-aws.aws.svc.cluster.local:8080" }
-        ports: [ { containerPort: 8080 } ]
----
-apiVersion: v1
-kind: Service
-metadata: { name: api-gcp, namespace: gcp, labels: { app: api-gcp, cloud: gcp } }
-spec:
-  selector: { app: api-gcp }
-  ports: [ { port: 8080, targetPort: 8080 } ]
----
-apiVersion: apps/v1
-kind: Deployment
-metadata: { name: api-azure, namespace: azure, labels: { app: api-azure, version: v1, cloud: azure } }
+metadata:
+  name: api-azure
+  namespace: azure
+  labels: { app: api-azure }
 spec:
   replicas: 1
   selector: { matchLabels: { app: api-azure } }
   template:
-    metadata: { labels: { app: api-azure, version: v1, cloud: azure } }
+    metadata:
+      labels: { app: api-azure }
+      annotations:
+        sidecar.istio.io/userVolume: |
+          [{"name":"istio-token","projected":{"sources":[{"serviceAccountToken":{"path":"istio-token","audience":"istio-ca","expirationSeconds":43200}}]}}]
+        sidecar.istio.io/userVolumeMount: |
+          [{"name":"istio-token","mountPath":"/var/run/secrets/tokens","readonly":true}]
     spec:
       containers:
       - name: app
         image: nicholasjackson/fake-service:v0.26.2
         env:
-        - { name: LISTEN_ADDR, value: "0.0.0.0:8080" }
-        - { name: NAME,        value: "api-azure" }
-        - { name: MESSAGE,     value: "hello from AZURE" }
-        - { name: UPSTREAM_URIS, value: "http://api-gcp.gcp.svc.cluster.local:8080" }
-        ports: [ { containerPort: 8080 } ]
+        - { name: NAME, value: "api-azure" }
+        - { name: MESSAGE, value: "hello from azure" }
+        ports:
+        - containerPort: 9090
 ---
 apiVersion: v1
 kind: Service
-metadata: { name: api-azure, namespace: azure, labels: { app: api-azure, cloud: azure } }
+metadata:
+  name: api-azure
+  namespace: azure
+  labels: { app: api-azure }
 spec:
   selector: { app: api-azure }
-  ports: [ { port: 8080, targetPort: 8080 } ]
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 9090
+
+# GCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gcp
+  namespace: gcp
+  labels: { app: api-gcp }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: api-gcp } }
+  template:
+    metadata:
+      labels: { app: api-gcp }
+      annotations:
+        sidecar.istio.io/userVolume: |
+          [{"name":"istio-token","projected":{"sources":[{"serviceAccountToken":{"path":"istio-token","audience":"istio-ca","expirationSeconds":43200}}]}}]
+        sidecar.istio.io/userVolumeMount: |
+          [{"name":"istio-token","mountPath":"/var/run/secrets/tokens","readonly":true}]
+    spec:
+      containers:
+      - name: app
+        image: nicholasjackson/fake-service:v0.26.2
+        env:
+        - { name: NAME, value: "api-gcp" }
+        - { name: MESSAGE, value: "hello from gcp" }
+        ports:
+        - containerPort: 9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gcp
+  namespace: gcp
+  labels: { app: api-gcp }
+spec:
+  selector: { app: api-gcp }
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 9090

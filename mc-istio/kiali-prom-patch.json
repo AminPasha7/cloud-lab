@@ -1,0 +1,9 @@
+{
+  "spec": {
+    "external_services": {
+      "prometheus": {
+        "url": "http://kube-prometheus-stack-prometheus.monitoring:9090"
+      }
+    }
+  }
+}

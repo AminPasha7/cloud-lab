@@ -1,0 +1,11 @@
+{
+  "spec": {
+    "external_services": {
+      "grafana": {
+        "enabled": true,
+        "in_cluster_url": "http://kube-prometheus-stack-grafana.monitoring:80",
+        "url": "http://localhost:3000"
+      }
+    }
+  }
+}

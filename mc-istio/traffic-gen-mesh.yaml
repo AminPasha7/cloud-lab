@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-gen-aws
+  namespace: aws
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-gen
+  template:
+    metadata:
+      labels:
+        app: traffic-gen
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:latest
+          command: ["sh","-c"]
+          args:
+            - |
+              echo "Starting traffic-gen in aws -> {azure,gcp}";
+              while true; do
+                curl -sS http://api-azure.azure:8080/  >/dev/null || true;
+                curl -sS http://api-gcp.gcp:8080/     >/dev/null || true;
+                sleep 1;
+              done
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-gen-azure
+  namespace: azure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-gen
+  template:
+    metadata:
+      labels:
+        app: traffic-gen
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:latest
+          command: ["sh","-c"]
+          args:
+            - |
+              echo "Starting traffic-gen in azure -> {aws,gcp}";
+              while true; do
+                curl -sS http://api-aws.aws:8080/     >/dev/null || true;
+                curl -sS http://api-gcp.gcp:8080/     >/dev/null || true;
+                sleep 1;
+              done
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traffic-gen-gcp
+  namespace: gcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-gen
+  template:
+    metadata:
+      labels:
+        app: traffic-gen
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:latest
+          command: ["sh","-c"]
+          args:
+            - |
+              echo "Starting traffic-gen in gcp -> {aws,azure}";
+              while true; do
+                curl -sS http://api-aws.aws:8080/      >/dev/null || true;
+                curl -sS http://api-azure.azure:8080/  >/dev/null || true;
+                sleep 1;
+              done
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi

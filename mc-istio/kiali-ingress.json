@@ -1,0 +1,39 @@
+{
+  "spec": {
+    "server": {
+      "web_fqdn": "kiali.localtest.me",
+      "web_schema": "http",
+      "web_root": "/"
+    },
+    "deployment": {
+      "ingress": {
+        "enabled": true,
+        "class_name": "nginx",
+        "override_yaml": {
+          "spec": {
+            "ingressClassName": "nginx",
+            "rules": [
+              {
+                "host": "kiali.localtest.me",
+                "http": {
+                  "paths": [
+                    {
+                      "path": "/",
+                      "pathType": "Prefix",
+                      "backend": {
+                        "service": {
+                          "name": "kiali",
+                          "port": { "number": 20001 }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: kiali-gw
+  namespace: istio-system
+  labels:
+    istio.io/rev: 1-22-3
+spec:
+  selector:
+    istio: ingressgateway
+    app: istio-ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - kiali.localtest.me
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+  labels:
+    istio.io/rev: 1-22-3
+spec:
+  hosts:
+  - kiali.localtest.me
+  gateways:
+  - kiali-gw
+  http:
+  - match:
+    - uri:
+        exact: /
+    redirect:
+      uri: /kiali
+  - match:
+    - uri:
+        prefix: /kiali
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local
+        port:
+          number: 20001

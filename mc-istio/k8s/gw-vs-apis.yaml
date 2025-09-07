@@ -1,0 +1,41 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: apis-gw
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port: { number: 80, name: http, protocol: HTTP }
+    hosts:
+    - api-aws.localtest.me
+    - api-azure.localtest.me
+    - api-gcp.localtest.me
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: api-aws, namespace: aws }
+spec:
+  hosts: ["api-aws.localtest.me"]
+  gateways: ["istio-system/apis-gw"]
+  http:
+  - route: [{ destination: { host: api-aws.aws.svc.cluster.local, port: { number: 8080 } } }]
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: api-azure, namespace: azure }
+spec:
+  hosts: ["api-azure.localtest.me"]
+  gateways: ["istio-system/apis-gw"]
+  http:
+  - route: [{ destination: { host: api-azure.azure.svc.cluster.local, port: { number: 8080 } } }]
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata: { name: api-gcp, namespace: gcp }
+spec:
+  hosts: ["api-gcp.localtest.me"]
+  gateways: ["istio-system/apis-gw"]
+  http:
+  - route: [{ destination: { host: api-gcp.gcp.svc.cluster.local, port: { number: 8080 } } }]

@@ -1,0 +1,6 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/userVolume: null
+        sidecar.istio.io/userVolumeMount: null

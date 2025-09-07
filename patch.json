@@ -1,0 +1,9 @@
+{
+  "spec": {
+    "source": {
+      "directory": {
+        "exclude": "k8s/hello-ingress.yaml"
+      }
+    }
+  }
+}
